@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<taskInfo version="1.0">
+  <info name="host_url" description="The url where the Infoblox instance is located at." />
+  <info name="username" description="The username for the Infoblox account." />
+  <info name="password" type="encrypted" description="The password for the Infoblox account." />
+  <info name="enable_debug_logging" description="Enable debug logging if the value is set to 'Yes'.">No</info>
+</taskInfo>

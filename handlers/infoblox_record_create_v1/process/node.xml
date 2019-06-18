@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taskDefinition id="infoblox_record_create" name="Infobox Record Create" schema_version="1.0" version="1">
+    <author>support@kineticdata.com</author>
+    <description>Creates an A record in Infoblox, with the option to also create a PTR record.</description>
+    <helpurl></helpurl>
+    <visible>true</visible>
+    <deferrable>false</deferrable>
+    <parameters>
+        <parameter id="name" label="Name" required="true"
+            tooltip="The name of the record."/>
+        <parameter id="zone" label="Zone" required="true"
+            tooltip="The location of the zone that this will be placed in."/>
+        <parameter id="ip_address" label="IP Address" required="true"
+            tooltip="The ip address of the record."/>
+        <parameter id="create_ptr_record" required="true" label="Create Associated PTR Record"
+            tooltip="If true, an associated PTR record will be created." />
+    </parameters>
+    <handler name="infoblox_record_create" version="1">
+        <infos>
+            <info name="host_url">&lt;%= @info['host_url'] %&gt;</info>
+            <info name="username">&lt;%= @info['username'] %&gt;</info>
+            <info name="password">&lt;%= @info['password'] %&gt;</info>
+            <info name="enable_debug_logging">&lt;%= @info['enable_debug_logging'] %&gt;</info>
+        </infos>
+        <parameters>
+            <parameter name='name'>&lt;%= @parameters['name'] %&gt;</parameter>
+            <parameter name="zone">&lt;%= @parameters['zone'] %&gt;</parameter>
+            <parameter name='ip_address'>&lt;%= @parameters['ip_address'] %&gt;</parameter>
+            <parameter name='create_ptr_record'>&lt;%= @parameters['create_ptr_record'] %&gt;</parameter>
+        </parameters>
+    </handler>
+    <results/>
+</taskDefinition>

@@ -1,0 +1,67 @@
+<html>
+<head>
+    <title>Retrieve Imgur Refresh Token</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+    <script>
+        function getCode() {
+            var url = "https://api.imgur.com/oauth2/authorize?response_type=code&state=imgur_handler&client_id=";
+            url = url + $("#id").val();
+            if ($("#id").val() == "") {
+                alert("Please enter a Client Id");
+            } else {
+                window.open(url,"_blank");
+            }
+        }
+
+        function getRefreshKey() {
+            var code = $("#code").val()
+            var client_id = $("#id").val()
+            var client_secret = $("#secret").val()
+            var data = "code=" + code + "&grant_type=authorization_code&client_id=" + client_id + "&client_secret=" + client_secret
+            $.ajax({
+                type: 'POST',
+                url: 'https://api.imgur.com/oauth2/token',
+                data: data,
+                dataType: "application/x-www-form-urlencoded"
+            }).always(function(resp) {
+                var obj = JSON.parse(resp.responseText)
+                if (typeof(obj.refresh_token) !== 'undefined') {
+                    $("#refresh_token").val(obj.refresh_token);
+                } else {
+                    console.log(obj);
+                    alert("Failed Request: " + JSON.stringify(obj));
+                }
+            });
+        }
+    </script>
+    <h4>1. First get the Client Id and Client Secret from the <a href="https://api.imgur.com/oauth2/addclient">Imgur Registration Console</a> by creating an application.</h4>
+    <table>
+        <tbody>
+            <tr>
+                <td>Client Id:</td>
+                <td><input id="id" name="client_id" type="text" /></td>
+            </tr>
+            <tr>
+                <td>Client Secret:</td>
+                <td><input id="secret" name="client_secret" type="text" /></td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="button" onclick="getCode();">Get Code!</button>
+    <br>
+    <h4>2. Click on 'Get Code!' to allow the handler to access your Imgur account.</a></h4>
+    <h4>3. After allowing access, look in the url and copy the string of characters that comes after code= in the url.</a></h4>
+    <h4>4. Copy the code into the code input field.</a></h4>
+    <h4>5. Click on 'Get Refresh Token!' to generate your access token.</a></h4>
+    <h4>6. Copy the refresh token into your info values for your Imgur handlers!</a></h4>
+    <br>
+    Code: <input id="code" name="code" type="text" size="60" />
+    <br>
+    <button type="button" onclick="getRefreshKey();">Get Refresh Token!</button>
+    <br>
+    <br>
+    Refresh Token: <input id="refresh_token" name="refresh_token" type="text" size="80" readonly>
+</body>
+</html>

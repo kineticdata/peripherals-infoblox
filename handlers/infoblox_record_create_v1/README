@@ -1,0 +1,33 @@
+== Infoblox_Record_Create_V1
+    Creates an A record in Infoblox, with the option to also create a PTR record.
+
+=== Parameters
+    [Name]
+        The name of the record.
+    [Zone]
+        The location of the zone that this will be placed in.
+    [IP Address]
+        The ip address of the record.
+    [Create Associated PTR Record]
+        If true, an associated PTR record will be created.
+
+=== Results
+This handler returns no results
+
+==== Sample Configuration
+    Name:                                   sample.location
+    Zone:                                   kineticdata.com
+    IP Address:                             172.16.8.15
+    Create Associated PTR Record:           true
+
+=== Detailed Description
+    This handler uses the REST Infoblox API to create an A record (with the 
+    possibility to also create a PTR record). After configuring the handler
+    with the Url where the Infoblox server is hosted at along with the username
+    and password of an account with the correct permissions, the handler will
+    start to build the hash of information to send to Infoblox. The name and 
+    zone will be appended with a period being added in between (so the zone
+    should not have a leading period on it) to create the complete name to send
+    in the REST call. Those parameters will then be sent to Infoblox to create
+    the A record and if 'Create Associated PTR Record' is true a second call
+    will be sent to create the PTR record. 
