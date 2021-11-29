@@ -81,6 +81,7 @@ public class InfobloxAdapter implements BridgeAdapter {
     private String username;
     private String password;
     private String host;
+    private String pathSegment = "/wapi/v2.0/";
 
     /*---------------------------------------------------------------------------------------------
      * SETUP METHODS
@@ -91,7 +92,6 @@ public class InfobloxAdapter implements BridgeAdapter {
         this.username = properties.getValue(Properties.PROPERTY_USERNAME);
         this.password = properties.getValue(Properties.PROPERTY_PASSWORD);
         this.host = StringUtils.removeEnd(properties.getValue(Properties.PROPERTY_HOST), "/");
-
     }
 
     @Override
@@ -123,7 +123,7 @@ public class InfobloxAdapter implements BridgeAdapter {
         // Build the URL
         StringBuilder buildUrl = new StringBuilder();
         buildUrl.append(this.host);
-        buildUrl.append("/wapi/v1.0/");
+        buildUrl.append(pathSegment);
         buildUrl.append(request.getStructure());
         
         // Parsing the query to include parameters if they have been used. 
@@ -135,7 +135,7 @@ public class InfobloxAdapter implements BridgeAdapter {
         }
         
         String output = "";
-        try (CloseableHttpClient httpclient = createAcceptSelfSignedCertificateClient()) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet get = new HttpGet(buildUrl.toString());
             
             // Setting up the basic authentication and appending it to the Http object
@@ -148,7 +148,7 @@ public class InfobloxAdapter implements BridgeAdapter {
             output = EntityUtils.toString(response.getEntity());
             logger.trace("Request response code: " + response.getStatusLine().getStatusCode());
             logger.trace("Request response: " + output);
-        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException e) {
+        } catch (IOException e) {
             throw new BridgeError(e);
         }
         
@@ -167,7 +167,7 @@ public class InfobloxAdapter implements BridgeAdapter {
     public Record retrieve(BridgeRequest request) throws BridgeError {
         StringBuilder buildUrl = new StringBuilder();
         buildUrl.append(this.host);
-        buildUrl.append("/wapi/v1.0/");
+        buildUrl.append(pathSegment);
         buildUrl.append(request.getStructure());
         
         List<String> fields = request.getFields();
@@ -192,7 +192,7 @@ public class InfobloxAdapter implements BridgeAdapter {
         }
         
         String output = "";
-        try (CloseableHttpClient httpclient = createAcceptSelfSignedCertificateClient()) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet get = new HttpGet(buildUrl.toString());
             
             // Setting up the basic authentication and appending it to the Http object
@@ -205,7 +205,7 @@ public class InfobloxAdapter implements BridgeAdapter {
             output = EntityUtils.toString(response.getEntity());
             logger.trace("Request response code: " + response.getStatusLine().getStatusCode());
             logger.trace("Request response: " + output);
-        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException e) {
+        } catch (IOException e) {
             throw new BridgeError(e);
         }
         
@@ -242,7 +242,7 @@ public class InfobloxAdapter implements BridgeAdapter {
     public RecordList search(BridgeRequest request) throws BridgeError {
         StringBuilder buildUrl = new StringBuilder();
         buildUrl.append(this.host);
-        buildUrl.append("/wapi/v1.0/");
+        buildUrl.append(pathSegment);
         buildUrl.append(request.getStructure());
         
         List<String> fields = request.getFields();
@@ -267,7 +267,8 @@ public class InfobloxAdapter implements BridgeAdapter {
         }
         
         String output = "";
-        try (CloseableHttpClient httpclient = createAcceptSelfSignedCertificateClient()) {
+
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet get = new HttpGet(buildUrl.toString());
             
             // Setting up the basic authentication and appending it to the Http object
@@ -280,7 +281,7 @@ public class InfobloxAdapter implements BridgeAdapter {
             output = EntityUtils.toString(response.getEntity());
             logger.trace("Request response code: " + response.getStatusLine().getStatusCode());
             logger.trace("Request response: " + output);
-        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException e) {
+        } catch (IOException e) {
             throw new BridgeError(e);
         }
         
@@ -384,29 +385,5 @@ public class InfobloxAdapter implements BridgeAdapter {
     private String encodeQuery(String query) {
         String encodedQuery = URLEncoder.encode(query);
         return encodedQuery.replaceAll("%3D", "=").replaceAll("%26", "&");
-    }
-
-    private static CloseableHttpClient createAcceptSelfSignedCertificateClient()
-            throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-
-        // use the TrustSelfSignedStrategy to allow Self Signed Certificates
-        SSLContext sslContext = SSLContextBuilder
-                .create()
-                .loadTrustMaterial(new TrustSelfSignedStrategy())
-                .build();
-
-        // we can optionally disable hostname verification. 
-        // if you don't want to further weaken the security, you don't have to include this.
-        HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
-        
-        // create an SSL Socket Factory to use the SSLContext with the trust self signed certificate strategy
-        // and allow all hosts verifier.
-        SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
-        
-        // finally create the HttpClient using HttpClient factory methods and assign the ssl socket factory
-        return HttpClients
-                .custom()
-                .setSSLSocketFactory(connectionFactory)
-                .build();
     }
 }
