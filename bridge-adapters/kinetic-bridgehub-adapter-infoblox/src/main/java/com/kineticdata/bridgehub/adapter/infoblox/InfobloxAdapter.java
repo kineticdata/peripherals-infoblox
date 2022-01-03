@@ -84,8 +84,10 @@ public class InfobloxAdapter implements BridgeAdapter {
         this.username = properties.getValue(Properties.PROPERTY_USERNAME);
         this.password = properties.getValue(Properties.PROPERTY_PASSWORD);
         this.host = StringUtils.removeEnd(properties.getValue(Properties.PROPERTY_HOST), "/");
-        this.pathSegment = properties.getValue(Properties.PROPERTY_PATH_SEGMENT).isEmpty() 
-            ? "/wapi/v1.0/" : properties.getValue(Properties.PROPERTY_PATH_SEGMENT);
+        this.pathSegment = properties.getValue(Properties.PROPERTY_PATH_SEGMENT) == null 
+            || properties.getValue(Properties.PROPERTY_PATH_SEGMENT).isEmpty() 
+                ? "/wapi/v1.0/" 
+                : properties.getValue(Properties.PROPERTY_PATH_SEGMENT);
     }
 
     @Override
