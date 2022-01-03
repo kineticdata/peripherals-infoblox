@@ -12,27 +12,18 @@ import com.kineticdata.commons.v1.config.ConfigurableProperty;
 import com.kineticdata.commons.v1.config.ConfigurablePropertyMap;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -70,19 +61,20 @@ public class InfobloxAdapter implements BridgeAdapter {
         public static final String PROPERTY_HOST = "Host";
         public static final String PROPERTY_USERNAME = "Username";
         public static final String PROPERTY_PASSWORD = "Password";
+        public static final String PROPERTY_PATH_SEGMENT = "Path Segment";
     }
 
     private final ConfigurablePropertyMap properties = new ConfigurablePropertyMap(
         new ConfigurableProperty(Properties.PROPERTY_USERNAME).setIsRequired(true),
         new ConfigurableProperty(Properties.PROPERTY_PASSWORD).setIsRequired(true).setIsSensitive(true),
-        new ConfigurableProperty(Properties.PROPERTY_HOST).setIsRequired(true)
+        new ConfigurableProperty(Properties.PROPERTY_HOST).setIsRequired(true),
+        new ConfigurableProperty(Properties.PROPERTY_PATH_SEGMENT)
     );
 
     private String username;
     private String password;
     private String host;
-    private String pathSegment = "/wapi/v2.0/";
-
+    private String pathSegment;
     /*---------------------------------------------------------------------------------------------
      * SETUP METHODS
      *-------------------------------------------------------------------------------------------*/
@@ -92,6 +84,8 @@ public class InfobloxAdapter implements BridgeAdapter {
         this.username = properties.getValue(Properties.PROPERTY_USERNAME);
         this.password = properties.getValue(Properties.PROPERTY_PASSWORD);
         this.host = StringUtils.removeEnd(properties.getValue(Properties.PROPERTY_HOST), "/");
+        this.pathSegment = properties.getValue(Properties.PROPERTY_PATH_SEGMENT).isEmpty() 
+            ? "/wapi/v1.0/" : properties.getValue(Properties.PROPERTY_PATH_SEGMENT);
     }
 
     @Override

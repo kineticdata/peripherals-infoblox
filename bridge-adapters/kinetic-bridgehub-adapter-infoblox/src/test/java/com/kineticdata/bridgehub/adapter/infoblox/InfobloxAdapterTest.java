@@ -1,6 +1,5 @@
 package com.kineticdata.bridgehub.adapter.infoblox;
 
-import com.kineticdata.bridgehub.adapter.BridgeAdapter;
 import com.kineticdata.bridgehub.adapter.BridgeAdapterTestBase;
 import com.kineticdata.bridgehub.adapter.BridgeError;
 import com.kineticdata.bridgehub.adapter.BridgeRequest;
@@ -73,7 +72,7 @@ public class InfobloxAdapterTest extends BridgeAdapterTestBase  {
         request.setParameters(parameters);
         
         List<String> fields = 
-            Arrays.asList("network","comment","_ref","extattrs");
+            Arrays.asList("network","comment","_ref","extensible_attributes.VLAN");
         request.setFields(fields);
         
         RecordList records = null;
@@ -180,7 +179,7 @@ public class InfobloxAdapterTest extends BridgeAdapterTestBase  {
         BridgeError error = null;
         
         request.setStructure("zone_auth");
-        request.setQuery("fqdn=<%=parameter[\"FQDN\"]%>");
+        request.setQuery("fqdn~=<%=parameter[\"FQDN\"]%>");
         
         Map parameters = new HashMap();
         parameters.put("FQDN", "nitckc");

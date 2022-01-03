@@ -5,6 +5,7 @@ Bridge Configuration:
     Host: ""
     Username: ""
     Password: ""
+    Path Segment: ""
 
 # Setting the different request configurations for the Standard Bridgehub tests
     # Structure: Structure string
@@ -17,8 +18,8 @@ Test Request Configuration:
     Structure: "network"
     Fields: "network,comment,_ref,extensible_attributes.VLAN"
     Empty Value Query: ""
-    Single Value Query: "contains_address=10.203.78.148"
-    Multiple Value Query: "VLAN~=^301"
+    Single Value Query: "contains_address=10.203.78.143"
+    Multiple Value Query: "VLAN~=^300"
 
 # Configuration of the various metadata options
     # Pagination Type: Possible values (string) - offset,token,none
