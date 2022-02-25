@@ -1,1 +1,4 @@
---- {}
+---
+repo-name: peripherals-infoblox
+display-name: InfoBox
+description: Infoblox delivers appliance-based solutions for business-critical DNS, DHCP, and IP Address Management (DDI) and Network Automation. Over 7,700 global enterprises and service providers use Infoblox to control their networks. Infoblox uses actionable network intelligence to deliver control and security from the core.
