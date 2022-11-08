@@ -7,7 +7,6 @@ import com.kineticdata.bridgehub.adapter.BridgeUtils;
 import com.kineticdata.bridgehub.adapter.Count;
 import com.kineticdata.bridgehub.adapter.Record;
 import com.kineticdata.bridgehub.adapter.RecordList;
-import static com.kineticdata.bridgehub.adapter.infoblox.InfobloxAdapter.logger;
 import com.kineticdata.commons.v1.config.ConfigurableProperty;
 import com.kineticdata.commons.v1.config.ConfigurablePropertyMap;
 import java.io.IOException;
@@ -148,14 +147,7 @@ public class InfobloxAdapter implements BridgeAdapter {
             throw new BridgeError(e);
         }
         
-        JSONArray jsonArray;
-        try {
-            jsonArray = (JSONArray)JSONValue.parse(output);
-            if (jsonArray == null) throw new RuntimeException("The returned output is not valid JSON and therefore cannot be parsed. Turn on trace logging to see the full output the adapter is recieving.");
-        } catch (Exception e) {
-            throw new BridgeError("Error: Unable to parse JSON",e);
-        }
-
+        JSONArray jsonArray = parseResponse(output);
         return new Count(jsonArray.size());
     }
 
@@ -205,14 +197,7 @@ public class InfobloxAdapter implements BridgeAdapter {
             throw new BridgeError(e);
         }
         
-        JSONArray jsonArray;
-        try {
-            jsonArray = (JSONArray)JSONValue.parse(output);
-            if (jsonArray == null) throw new RuntimeException("The returned output is not valid JSON and therefore cannot be parsed. Turn on trace logging to see the full output the adapter is recieving.");
-        } catch (Exception e) {
-            throw new BridgeError("Error: Unable to parse JSON",e);
-        }
-        
+        JSONArray jsonArray = parseResponse(output);
         Map<String,Object> record = null;
         if (jsonArray.size() > 1) {
             throw new BridgeError("Multiple results matched an expected single match query");
@@ -281,14 +266,7 @@ public class InfobloxAdapter implements BridgeAdapter {
             throw new BridgeError(e);
         }
         
-        JSONArray jsonArray;
-        try {
-            jsonArray = (JSONArray)JSONValue.parse(output);
-            if (jsonArray == null) throw new RuntimeException("The returned output is not valid JSON and therefore cannot be parsed. Turn on trace logging to see the full output the adapter is recieving.");
-        } catch (Exception e) {
-            throw new BridgeError("Error: Unable to parse JSON",e);
-        }
-        
+        JSONArray jsonArray = parseResponse(output);
         List<Record> records = new ArrayList<>();
         for (int i = 0; i<jsonArray.size(); i++) {
             JSONObject record = (JSONObject)jsonArray.get(i);
@@ -357,7 +335,23 @@ public class InfobloxAdapter implements BridgeAdapter {
             return null;
         }
     }
-    
+
+    private JSONArray parseResponse(String responseBody) throws BridgeError {
+        Object object = JSONValue.parse(responseBody);
+        if (object == null) {
+            throw new BridgeError("The returned output is not valid JSON and therefore cannot be parsed. Turn on trace logging to see the full output the adapter is receiving.");
+        } else if (object instanceof JSONArray) {
+            return (JSONArray) object;
+        } else if (object instanceof JSONObject) {
+            JSONObject jsonObject = (JSONObject) object;
+            logger.trace(jsonObject.toJSONString());
+            return new JSONArray();
+        } else {
+            logger.error("The response received is not JSON: " + object.getClass().getName());
+            return new JSONArray();
+        }
+    }
+
     /**
     * Returns the string value of the object.
     * <p>
